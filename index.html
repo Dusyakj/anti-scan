@@ -9,12 +9,24 @@
 <body>
     <div class="container">
         <h1>Не сканируй всё подряд</h1>
+        
+        <div class="scoreboard">
+            <div>Счёт: <span id="score">0</span></div>
+            <div>Рекорд: <span id="highScore">0</span></div>
+        </div>
+        
         <div class="game-container">
             <canvas id="gameCanvas" width="300" height="400"></canvas>
             <div id="gameOver" class="hidden">
                 <p>Игра окончена!</p>
+                <p>Ваш счёт: <span id="finalScore">0</span></p>
                 <button id="restartBtn">Начать заново</button>
             </div>
+        </div>
+        
+        <div class="controls">
+            <button id="leftBtn">&#9664;</button>
+            <button id="rightBtn">&#9654;</button>
         </div>
     </div>
     <script src="index.js"></script>

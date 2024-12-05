@@ -3,18 +3,26 @@ const ctx = canvas.getContext('2d');
 
 const gameOverDiv = document.getElementById('gameOver');
 const restartBtn = document.getElementById('restartBtn');
+const scoreElement = document.getElementById('score');
+const highScoreElement = document.getElementById('highScore');
+const finalScoreElement = document.getElementById('finalScore');
+
+const leftBtn = document.getElementById('leftBtn');
+const rightBtn = document.getElementById('rightBtn');
 
 const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
 
 let player;
 let obstacles = [];
-let obstacleFrequency = 60; // Скорость появления препятствий
+let obstacleFrequency = 60;
 let frame = 0;
 let animationId;
 let gameOver = false;
+let score = 0;
+let highScore = localStorage.getItem('highScore') || 0;
+highScoreElement.textContent = highScore;
 
-// Класс игрока
 class Player {
     constructor() {
         this.width = 50;
@@ -33,7 +41,6 @@ class Player {
     update() {
         this.x += this.dx;
 
-        // Ограничение движения по горизонтали
         if (this.x < 0) this.x = 0;
         if (this.x + this.width > canvasWidth) this.x = canvasWidth - this.width;
 
@@ -41,7 +48,6 @@ class Player {
     }
 }
 
-// Класс препятствия
 class Obstacle {
     constructor() {
         this.width = Math.random() * (100 - 30) + 30;
@@ -62,7 +68,6 @@ class Obstacle {
     }
 }
 
-// Обработка нажатий клавиш
 const keys = {
     ArrowLeft: false,
     ArrowRight: false
@@ -80,23 +85,47 @@ document.addEventListener('keyup', (e) => {
     }
 });
 
-// Инициализация игры
+let touchLeft = false;
+let touchRight = false;
+
+leftBtn.addEventListener('touchstart', (e) => {
+
+    e.preventDefault();
+    touchLeft = true;
+});
+
+leftBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    touchLeft = false;
+});
+
+rightBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    touchRight = true;
+});
+
+rightBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    touchRight = false;
+});
+
 function init() {
     player = new Player();
     obstacles = [];
     frame = 0;
     gameOver = false;
+    score = 0;
+    scoreElement.textContent = score;
+    finalScoreElement.textContent = score;
     gameOverDiv.classList.add('hidden');
     animate();
 }
 
-// Анимация игры
 function animate() {
     animationId = requestAnimationFrame(animate);
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     player.update();
 
-    // Генерация препятствий
     if (frame % obstacleFrequency === 0) {
         obstacles.push(new Obstacle());
     }
@@ -104,7 +133,6 @@ function animate() {
     obstacles.forEach((obstacle, index) => {
         obstacle.update();
 
-        // Проверка столкновений
         if (
             player.x < obstacle.x + obstacle.width &&
             player.x + player.width > obstacle.x &&
@@ -114,13 +142,18 @@ function animate() {
             endGame();
         }
 
-        // Удаление препятствий, вышедших за пределы экрана
         if (obstacle.y > canvasHeight) {
             obstacles.splice(index, 1);
+            score++;
+            scoreElement.textContent = score;
+            if (score > highScore) {
+                highScore = score;
+                highScoreElement.textContent = highScore;
+                localStorage.setItem('highScore', highScore);
+            }
         }
     });
 
-    // Управление игроком
     if (keys.ArrowLeft) {
         player.dx = -player.speed;
     } else if (keys.ArrowRight) {
@@ -129,20 +162,25 @@ function animate() {
         player.dx = 0;
     }
 
+    if (touchLeft) {
+        player.dx = -player.speed;
+    }
+    if (touchRight) {
+        player.dx = player.speed;
+    }
+
     frame++;
 }
 
-// Завершение игры
 function endGame() {
     cancelAnimationFrame(animationId);
     gameOver = true;
+    finalScoreElement.textContent = score;
     gameOverDiv.classList.remove('hidden');
 }
 
-// Обработчик кнопки рестарта
 restartBtn.addEventListener('click', () => {
     init();
 });
 
-// Запуск игры при загрузке
 window.onload = init;
