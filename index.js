@@ -50,7 +50,7 @@ class Player {
 
 class Obstacle {
     constructor() {
-        this.width = Math.random() * (100 - 30) + 30;
+        this.width = 80;
         this.height = 20;
         this.x = Math.random() * (canvasWidth - this.width);
         this.y = -this.height;
