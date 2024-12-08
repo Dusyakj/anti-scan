@@ -113,12 +113,12 @@ function init() {
     player = new Player();
     obstacles = [];
     frame = 0;
-    gameOver = false;
+    gameOver = true;
     score = 0;
     scoreElement.textContent = score;
     finalScoreElement.textContent = score;
     gameOverDiv.classList.add('hidden');
-    animate();
+    animate()
 }
 
 function animate() {
@@ -183,4 +183,15 @@ restartBtn.addEventListener('click', () => {
     init();
 });
 
-window.onload = init;
+function firstInit() {
+    player = new Player();
+    obstacles = [];
+    frame = 0;
+    gameOver = true;
+    score = 0;
+    scoreElement.textContent = score;
+    finalScoreElement.textContent = score;
+    gameOverDiv.classList.add('hidden');
+    endGame()
+}
+window.onload = firstInit;
